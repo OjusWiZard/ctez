@@ -44,3 +44,8 @@ $TZC transfer 0 from $deployment_key to cfmm --entrypoint setLqtAddress --arg "\
 
 # Set the ctez fa12 address and the cfmm address in the oven management contract
 $TZC transfer 0 from $deployment_key to ctez --entrypoint set_addresses --arg "Pair \"$CFMM_ADDRESS\" \"$FA12_CTEZ_ADDRESS\"" --burn-cap 10
+
+echo "CTEZ_ADDRESS = $CTEZ_ADDRESS"
+echo "FA12_CTEZ_ADDRESS = $FA12_CTEZ_ADDRESS"
+echo "CFMM_ADDRESS = $CFMM_ADDRESS"
+echo "FA12_LQT_ADDRESS = $FA12_LQT_ADDRESS"
