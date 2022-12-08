@@ -29,7 +29,7 @@ let rec newton (p : newton_param) : nat =
 
 let rec newton_dx_to_dy (x, y, dx, rounds : nat * nat * nat * int) : nat =
     let xp = x + dx in
-    let xp2 = xp * xp in
+    let _xp2 = xp * xp in
     let u, _ = util x y in
     newton {x = x; y = y; dx = dx ; dy = 0n ; u = u; n = rounds}
 
