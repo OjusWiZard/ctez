@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Box, Flex } from '@chakra-ui/react';
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useCallback } from 'react';
 import { routes } from './routes';
 import Sidebar from '../components/sidebar';
 import Header from '../components/header';
@@ -15,11 +15,13 @@ export const AppRouter: React.FC = () => {
     setCollapsed(!collapsed);
   };
 
-  function handleToggled(value: boolean) {
+  const handleToggled = useCallback((value: boolean) => {
     setToggled(value);
-  }
+  }, [toggled])
 
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <Router>
       <Flex height="100vh">
         <Flex width="100%">
@@ -34,8 +36,12 @@ export const AppRouter: React.FC = () => {
 
             <Box overflow="auto">
               <Suspense fallback="Loading..">
+                {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore */}
                 <Switch>
                   {routes.map((route) => (
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     <Route
                       key={typeof route.path === 'string' ? route.path : route.path[0]}
                       path={route.path}

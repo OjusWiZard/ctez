@@ -18,7 +18,7 @@ import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
 import CopyAddress from '../CopyAddress';
 
-const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({ oven }) => {
+const OvenStats: React.FC<{ oven: AllOvenDatum | undefined }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
   const { t } = useTranslation(['common']);
   const [background, textcolor, text3, cardbg, text4] = useThemeColors([
@@ -70,7 +70,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
     <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
       <div>
         <Text color={textcolor} fontWeight="600">
-          {t('ovenStats')}
+          {t<string>('ovenStats')}
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
             <span>
               <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
@@ -79,7 +79,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
         </Text>
         <Flex mt={2}>
           <Text fontSize="sm" mr={1} fontWeight="500">
-            {t('ovenAddress')}:
+            {t<string>('ovenAddress')}:
           </Text>
           <Text color="light.text2" fontSize="xs">
             {oven?.value.address == null ? (
@@ -106,7 +106,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
           )}
 
           <Text color={text3} fontSize="xs">
-            {t('collateralratio')}
+            {t<string>('collateralratio')}
             <Tooltip
               label={showInfoCollateralRatio}
               placement="right"
@@ -134,7 +134,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
             />
           </Skeleton>
           <Text color={text3} fontSize="xs">
-            {t('collateralUtilization')}
+            {t<string>('collateralUtilization')}
             <Tooltip
               label={showInfoCollateralUtilization}
               placement="right"

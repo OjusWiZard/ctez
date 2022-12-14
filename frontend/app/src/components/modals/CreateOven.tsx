@@ -103,23 +103,23 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     (_delegate: string) =>
       _delegate !== ''
         ? [
-            {
-              value: userAddress!,
-              label: 'You',
-              noDelete: true,
-            },
-            {
-              value: _delegate,
-              label: 'Delegate',
-            },
-          ]
+          {
+            value: userAddress!,
+            label: 'You',
+            noDelete: true,
+          },
+          {
+            value: _delegate,
+            label: 'Delegate',
+          },
+        ]
         : [
-            {
-              value: userAddress!,
-              label: 'You',
-              noDelete: true,
-            },
-          ],
+          {
+            value: userAddress!,
+            label: 'You',
+            noDelete: true,
+          },
+        ],
     [userAddress],
   );
 
@@ -145,8 +145,8 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
         const depositors =
           data.depositors.length > 0 && data.depositType === 'Whitelist'
             ? data.depositors
-                .map((item: IDepositorItem) => item?.value ?? item)
-                .filter((o) => o !== userAddress)
+              .map((item: IDepositorItem) => item?.value ?? item)
+              .filter((o) => o !== userAddress)
             : undefined;
 
         const result = await create(
@@ -159,7 +159,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
         );
         handleProcessing(result);
         onClose();
-      } catch (error) {
+      } catch (error: any) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
         toast({
@@ -199,7 +199,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader fontWeight="500" color={text1}>
-            {t('createanOven')}
+            {t<string>('createanOven')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -227,7 +227,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             </FormControl>
             <FormControl w="100%" mb={2}>
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
-                {t('initialDeposit')}
+                {t<string>('initialDeposit')}
               </FormLabel>
               <Input
                 type="text"
@@ -255,12 +255,14 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
 
             <FormControl w="100%" mb={2}>
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
-                {t('depositorOp')}
+                {t<string>('depositorOp')}
               </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
                 {options.map((value) => {
                   const radio = getRadioProps({ value });
                   return (
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     <RadioCard key={value} {...radio}>
                       {value}
                     </RadioCard>
@@ -284,7 +286,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
 
           <ModalFooter>
             <Button w="100%" type="submit">
-              {t('createoven')}
+              {t<string>('createoven')}
             </Button>
           </ModalFooter>
         </ModalContent>

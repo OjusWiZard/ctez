@@ -73,7 +73,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
           setProcessing(false);
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
       toast({
         description: errorText,
@@ -118,7 +118,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
           </Text>
           {!isImported && (
             <Button variant="ghost" size="sm" onClick={() => setEdit(true)} disabled={processing}>
-              {t('edit')}
+              {t<string>('edit')}
             </Button>
           )}
         </Flex>
@@ -160,11 +160,11 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
           <Flex mt={5}>
             <Spacer />
             <Button variant="outline" onClick={() => setEdit(false)}>
-              {t('cancel')}
+              {t<string>('cancel')}
             </Button>
             <Box w={2} />
             <Button onClick={handleConfirm} isLoading={loading}>
-              {t('confirm')}
+              {t<string>('confirm')}
             </Button>
           </Flex>
         </form>
@@ -186,7 +186,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
   return (
     <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
       <Text color={textcolor} fontWeight="600">
-        {t('baker')}
+        {t<string>('baker')}
         <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
           <span>
             <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />

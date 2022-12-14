@@ -52,13 +52,13 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
     ovenAddress: string()
       .test({
         test: (value) => validateContractAddress(value ? value : '') === 3,
-        message: t('invalidAddress'),
+        message: t<string>('invalidAddress'),
       })
       .test({
         test: (value) => typeof value !== 'undefined' && !prevOvens.includes(value),
-        message: t('ovenAlreadyExits'),
+        message: t<string>('ovenAlreadyExits'),
       })
-      .required(t('required')),
+      .required(t<string>('required')),
   });
 
   const handleFormSubmit = async (
@@ -68,7 +68,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
     const isValidAddress = await isOven(ovenAddress);
     if (!isValidAddress) {
       toast({
-        description: t('invalidOvenAddress'),
+        description: t<string>('invalidOvenAddress'),
         status: 'error',
       });
     }
@@ -77,7 +77,9 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
       if (!prevOvens.includes(ovenAddress)) {
         formHelper.resetForm();
         toast({
-          description: t('ovenAddedSuccess'),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          description: t<string>('ovenAddedSuccess'),
           status: 'success',
         });
         dispatch(setExternalOvens(getExternalOvens(userAddress, CTEZ_ADDRESS)));
@@ -98,13 +100,13 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
       <ModalContent>
         <form onSubmit={handleSubmit}>
           <ModalHeader fontWeight="500" color={tabcolor}>
-            {t('trackanOven')}
+            {t<string>('trackanOven')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl id="track-oven" w="100%">
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
-                {t('ovenAddress')}
+                {t<string>('ovenAddress')}
               </FormLabel>
               <Input
                 name="ovenAddress"
@@ -119,7 +121,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
 
           <ModalFooter py={6}>
             <Button w="100%" type="submit" isLoading={formik.isSubmitting}>
-              {t('trackOven')}
+              {t<string>('trackOven')}
             </Button>
           </ModalFooter>
         </form>

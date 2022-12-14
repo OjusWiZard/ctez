@@ -66,6 +66,8 @@ const AllOvensContainer: React.FC = () => {
   const modals = useMemo(() => {
     return (
       <>
+        {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore */}
         <Paginator
           isDisabled={isDisabled}
           innerLimit={innerLimit}

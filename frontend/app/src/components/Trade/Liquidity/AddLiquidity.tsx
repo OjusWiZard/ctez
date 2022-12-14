@@ -35,7 +35,7 @@ const AddLiquidity: React.FC = () => {
   const handleProcessing = useTxLoader();
 
   const calcMaxToken = useCallback(
-    (cashDeposited: number, setFieldValue) => {
+    (cashDeposited: number, setFieldValue: (arg0: string, arg1: number) => void) => {
       if (cfmmStorage) {
         const { tokenPool, cashPool, lqtTotal } = cfmmStorage;
         const cash = cashDeposited * 1e6;
@@ -69,12 +69,12 @@ const AddLiquidity: React.FC = () => {
     slippage: number().min(0).optional(),
     deadline: number().min(0).optional(),
     amount: number()
-      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
-      .max(maxValue(), `${t('insufficientBalance')}`)
+      .min(0.000001, `${t<string>('shouldMinimum')} 0.000001`)
+      .max(maxValue(), `${t<string>('insufficientBalance')}`)
       .positive(t('shouldPositive'))
       .required(t('required')),
     ctezAmount: number()
-      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
+      .min(0.000001, `${t<string>('shouldMinimum')} 0.000001`)
       .max(maxCtezValue(), 'Insufficient ctez Balance')
       .positive(t('shouldPositive')),
   });
@@ -92,7 +92,7 @@ const AddLiquidity: React.FC = () => {
         };
         const result = await addLiquidity(data);
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(error);
         const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
         toast({

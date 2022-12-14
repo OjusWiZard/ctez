@@ -29,6 +29,8 @@ const RadioCard: React.FC<UseRadioProps> = (props) => {
         px={5}
         py={3}
       >
+        {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore */}
         {props.children}
         <Checkbox isChecked={props.isChecked} size="lg" />
       </Flex>

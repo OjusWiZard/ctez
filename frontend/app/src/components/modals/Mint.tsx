@@ -77,7 +77,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const validationSchema = Yup.object().shape({
     amount: Yup.number()
       .min(0.000001)
-      .max(maxValue(), `${t('insufficientBalance')}`)
+      .max(maxValue(), `${t<string>('insufficientBalance')}`)
       .test({
         test: (value) => {
           if (
@@ -112,7 +112,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
         const result = await mintOrBurn(Number(oven.key.id), Number(amount));
         handleProcessing(result);
         onClose();
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         toast({
@@ -147,7 +147,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            {t('mintctez')}
+            {t<string>('mintctez')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -161,7 +161,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel fontWeight="500" color={text2} fontSize="xs">
-                {t('amount')}
+                {t<string>('amount')}
               </FormLabel>
               <InputGroup>
                 <Input

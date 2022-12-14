@@ -5,6 +5,7 @@ import { MdContentCopy } from 'react-icons/md';
 import { useThemeColors } from '../../hooks/utilHooks';
 
 export interface Props {
+  children?: any;
   address: string;
   placement?: 'left' | 'right';
   spaced?: boolean;
@@ -24,7 +25,7 @@ const CopyAddress: React.FC<Props> = ({ children, address, placement, spaced }) 
         render() {
           return (
             <Flex borderRadius={14} background={cardbg}>
-              <Text m="auto">{t('copiedtoclipboard')}</Text>
+              <Text m="auto">{t<string>('copiedtoclipboard')}</Text>
             </Flex>
           );
         },

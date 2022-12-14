@@ -39,7 +39,7 @@ const Button: React.FC<IButtonProps> = (props) => {
   if (props.variant === 'outline') {
     return (
       <Box
-        type={props.type}
+        itemType={props.type}
         className={props.className}
         bgGradient={colorMode === 'light' ? 'linear(to-r, #0F62FF, #6B5BD2)' : 'transparent'}
         _hover={{

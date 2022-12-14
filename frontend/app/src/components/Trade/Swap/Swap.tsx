@@ -94,8 +94,8 @@ const Swap: React.FC = () => {
     deadline: Yup.number().min(0).required(t('required')),
     amount: Yup.number()
       .positive(t('shouldPositive'))
-      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
-      .max(maxValue(), `${t('insufficientBalance')}`)
+      .min(0.000001, `${t<string>('shouldMinimum')} 0.000001`)
+      .max(maxValue(), `${t<string>('insufficientBalance')}`)
       .required(t('required')),
   });
 
@@ -109,22 +109,22 @@ const Swap: React.FC = () => {
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
             ? await cashToToken({
-                amount: formData.amount,
-                deadline,
-                minTokensBought: minReceived,
-                to: userAddress,
-              })
+              amount: formData.amount,
+              deadline,
+              minTokensBought: minReceived,
+              to: userAddress,
+            })
             : await tokenToCash(
-                {
-                  deadline,
-                  minCashBought: minReceived,
-                  to: userAddress,
-                  tokensSold: formData.amount,
-                },
-                userAddress,
-              );
+              {
+                deadline,
+                minCashBought: minReceived,
+                to: userAddress,
+                tokensSold: formData.amount,
+              },
+              userAddress,
+            );
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(error);
         const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
         toast({

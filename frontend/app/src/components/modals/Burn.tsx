@@ -78,7 +78,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const validationSchema = object().shape({
     amount: number()
       .min(0.000001)
-      .max(maxValue(), `${t('insufficientBalance')}`)
+      .max(maxValue(), `${t<string>('insufficientBalance')}`)
       .test({
         test: (value) => {
           if (value) {
@@ -101,7 +101,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
         const amount = -data.amount;
         const result = await mintOrBurn(Number(oven.key.id), amount);
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         toast({
@@ -137,7 +137,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            {t('burnctez')}
+            {t<string>('burnctez')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -150,7 +150,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel fontWeight="500" color={text2} fontSize="xs">
-                {t('amount')}
+                {t<string>('amount')}
               </FormLabel>
               <InputGroup>
                 <Input

@@ -223,7 +223,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
             warning={result}
           />
           <Text color={text4} fontSize="xs">
-            {t('collateralUtilization')}
+            {t<string>('collateralUtilization')}
           </Text>
         </Box>
       </>

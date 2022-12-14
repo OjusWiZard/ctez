@@ -71,7 +71,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const validationSchema = object().shape({
     amount: number()
       .min(0.000001)
-      .max(maxValue(), `${t('insufficientBalance')}`)
+      .max(maxValue(), `${t<string>('insufficientBalance')}`)
       .required(t('required')),
   });
 
@@ -80,7 +80,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
       try {
         const result = await deposit(oven.value.address, Number(data.amount));
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         toast({
@@ -116,7 +116,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            {t('depositTezos')}
+            {t<string>('depositTezos')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>

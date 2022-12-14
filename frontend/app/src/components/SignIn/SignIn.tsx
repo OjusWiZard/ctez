@@ -74,6 +74,8 @@ const SignIn: React.FC = () => {
         onClose={onClose}
         offset={[0, -40]}
       >
+        {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore */}
         <PopoverTrigger>
           <ChakraButton w={0} minW={0} p={0} />
         </PopoverTrigger>

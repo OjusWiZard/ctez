@@ -10,7 +10,7 @@ interface ISkeletonLayout {
 
 const SkeletonLayout: React.FC<ISkeletonLayout> = (props) => {
   const renderSkeleton = useCallback(
-    (x, i: number) => {
+    (x: any, i: number) => {
       if (props.component === 'OvenCard') {
         return <OvenCardSkeleton key={i} />;
       }

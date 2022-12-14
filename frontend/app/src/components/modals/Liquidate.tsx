@@ -67,7 +67,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
           data.to,
         );
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         toast({
           description: errorText,
@@ -89,13 +89,13 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            {t('liquidateOven')}
+            {t<string>('liquidateOven')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                {t('ovenOwner')}
+                {t<string>('ovenOwner')}
               </FormLabel>
               <Input
                 readOnly
@@ -108,7 +108,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
             </FormControl>
             <FormControl mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                {t('to')}
+                {t<string>('to')}
               </FormLabel>
               <InputGroup>
                 <Input
@@ -124,7 +124,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
             </FormControl>
             <FormControl mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                {t('amount')}
+                {t<string>('amount')}
               </FormLabel>
               <InputGroup>
                 <Input
@@ -141,7 +141,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
           </ModalBody>
           <ModalFooter>
             <Button w="100%" variant="outline" type="submit">
-              {t('submit')}
+              {t<string>('submit')}
             </Button>
           </ModalFooter>
         </ModalContent>

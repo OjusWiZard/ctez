@@ -145,7 +145,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
     <>
       <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
         <Text color={textcolor} fontWeight="700">
-          {t('collateralOverview')}
+          {t<string>('collateralOverview')}
         </Text>
 
         <Divider />
@@ -159,7 +159,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
             </Skeleton>
 
             <Text color={text4} fontSize="xs">
-              {t('tezcollateral')}
+              {t<string>('tezcollateral')}
               <Tooltip
                 label={showInfoTez}
                 placement="right"
@@ -185,7 +185,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
             </Skeleton>
 
             <Text color={text4} fontSize="xs">
-              {t('requiredtezcollateral')}
+              {t<string>('requiredtezcollateral')}
               <Tooltip
                 label={showInfoRequiredTez}
                 placement="right"
@@ -211,7 +211,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
             </Skeleton>
 
             <Text color={text4} fontSize="xs">
-              {t('withdrawtez')}
+              {t<string>('withdrawtez')}
               <Tooltip
                 label={showInfoWithdrawTez}
                 placement="right"
@@ -228,11 +228,11 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
 
         <HStack w="100%" justifyContent="space-between" spacing="24px">
           <Button variant="outline" w="95%" onClick={handleDepositClick}>
-            {t('deposit')}
+            {t<string>('deposit')}
           </Button>
 
           <Button variant="outline" w="100%" onClick={handleWithdrawClick}>
-            {t('withdraw')}
+            {t<string>('withdraw')}
           </Button>
         </HStack>
       </Stack>

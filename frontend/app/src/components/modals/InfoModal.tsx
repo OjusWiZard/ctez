@@ -35,7 +35,7 @@ const InfoModal: React.FC<IInfoModal> = (props) => {
             <Image width="82px" height="82px" src={TxSubmitted} mb={6} mt={8} />
 
             <Heading color={text2} fontSize="lg" textAlign="center" mb={2}>
-              {t('txSubmitted')}
+              {t<string>('txSubmitted')}
             </Heading>
 
             <Button
@@ -47,7 +47,7 @@ const InfoModal: React.FC<IInfoModal> = (props) => {
                   : () => window.open(`https://${NETWORK}.tzkt.io/${props.opHash}`, '_blank')
               }
             >
-              {t('viewOnTezos')}
+              {t<string>('viewOnTezos')}
             </Button>
           </Flex>
         </ModalBody>

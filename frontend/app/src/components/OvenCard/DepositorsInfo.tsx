@@ -66,15 +66,15 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
       depositors: canAnyoneDepositLocal
         ? []
         : [
-            {
-              value: oven.key.owner,
-              label: oven.key.owner === userAddress ? 'You' : 'Owner',
-            },
-            ...(whitelist as string[])?.map((dep) => ({
-              value: dep,
-              label: dep === baker ? 'Baker' : null,
-            })),
-          ],
+          {
+            value: oven.key.owner,
+            label: oven.key.owner === userAddress ? 'You' : 'Owner',
+          },
+          ...(whitelist as string[])?.map((dep) => ({
+            value: dep,
+            label: dep === baker ? 'Baker' : null,
+          })),
+        ],
       isLoading: false,
     };
   }, [baker, oven, ovenStorageData, userAddress]);
@@ -85,7 +85,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
     }
 
     if (canAnyoneDeposit) {
-      return <Text>{t('everyoneAllowed')}</Text>;
+      return <Text>{t<string>('everyoneAllowed')}</Text>;
     }
 
     return depositors.map((dep) => (
@@ -107,7 +107,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
     <>
       <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
         <Text color={textcolor} fontWeight="600">
-          {t('allowedDepositors')}
+          {t<string>('allowedDepositors')}
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
             <span>
               <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
@@ -121,7 +121,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
 
         {!isImported && (
           <Button w="100%" variant="outline" leftIcon={<MdEdit />} onClick={() => setEdit(true)}>
-            {t('editDepositors')}
+            {t<string>('editDepositors')}
           </Button>
         )}
       </Stack>

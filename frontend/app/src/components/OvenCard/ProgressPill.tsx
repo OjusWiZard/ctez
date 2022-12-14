@@ -82,7 +82,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
           onClick={(e) => SetModalOpen(true)}
           _hover={{ cursor: 'pointer' }}
         >
-          {t('liquidateOven')}
+          {t<string>('liquidateOven')}
           <Icon ml={1} as={BsArrowRight} />
         </Text>
       )}
@@ -98,7 +98,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
           _hover={{ cursor: 'pointer' }}
         >
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
-            {t('actionRequired')}
+            {t<string>('actionRequired')}
           </Tooltip>
         </Text>
       )}

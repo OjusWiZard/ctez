@@ -42,11 +42,11 @@ const Delegate: React.FC<IDelegateProps> = (props) => {
       const result = await delegate(props.oven.address, delegator);
       if (result) {
         toast({
-          description: t('txSubmitted'),
+          description: t<string>('txSubmitted'),
           status: 'success',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
       toast({
         description: errorText,
@@ -62,11 +62,11 @@ const Delegate: React.FC<IDelegateProps> = (props) => {
     <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader fontWeight="500">{t('changeBaker')}</ModalHeader>
+        <ModalHeader fontWeight="500">{t<string>('changeBaker')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Select
-            placeholder={t('delegatePlaceholder')}
+            placeholder={t<string>('delegatePlaceholder')}
             value={delegator}
             onChange={(ev) => {
               setDelegator(ev.target.value);
@@ -81,11 +81,11 @@ const Delegate: React.FC<IDelegateProps> = (props) => {
         </ModalBody>
         <ModalFooter>
           <Button variant="outline" onClick={props.onClose}>
-            {t('cancel')}
+            {t<string>('cancel')}
           </Button>
           <Box w={2} />
           <Button onClick={handleConfirm} isLoading={loading}>
-            {t('confirm')}
+            {t<string>('confirm')}
           </Button>
         </ModalFooter>
       </ModalContent>

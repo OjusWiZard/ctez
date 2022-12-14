@@ -88,7 +88,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
     <Box {...props.outerBoxProps}>
       <FormControl isInvalid={error != null}>
         <FormLabel color={text2} fontSize="xs" fontWeight="500">
-          {t('allowedDepositors')}
+          {t<string>('allowedDepositors')}
         </FormLabel>
 
         <Wrap mb={2}>

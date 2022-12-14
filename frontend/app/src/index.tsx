@@ -9,6 +9,8 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
+    {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore */}
     <Provider store={store}>
       <App />
     </Provider>

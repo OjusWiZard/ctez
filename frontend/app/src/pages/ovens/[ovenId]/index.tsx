@@ -40,6 +40,8 @@ const OvenIdPage: React.FC = () => {
       spacing={4}
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
+        {/* // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore */}
         <OvenStats oven={oven} isImported={isImported} />
 
         <BakerInfo oven={oven} isImported={isImported} />

@@ -77,9 +77,9 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
         },
         ...(!props.canAnyoneDeposit
           ? (whitelist as string[])?.map((dep) => ({
-              label: trimAddress(dep),
-              value: dep,
-            }))
+            label: trimAddress(dep),
+            value: dep,
+          }))
           : []),
       ]);
       setDepType(props.canAnyoneDeposit ? options[1] : options[0]);
@@ -102,11 +102,11 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
         const result = await enableDisableAnyDepositor(props.oven.value.address, true);
         if (result) {
           toast({
-            description: t('txSubmitted'),
+            description: t<string>('txSubmitted'),
             status: 'success',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
         toast({
@@ -134,7 +134,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
           userDenyList,
         );
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
         toast({
@@ -162,13 +162,15 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
         <ModalBody>
           <FormControl w="100%" mb={4}>
             <FormLabel color={text2} fontWeight="500" fontSize="xs">
-              {t('depositorOp')}
+              {t<string>('depositorOp')}
             </FormLabel>
 
             <Flex {...group} w="100%" justifyContent="space-between">
               {options.map((value) => {
                 const radio = getRadioProps({ value });
                 return (
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   <RadioCard key={value} {...radio}>
                     {value}
                   </RadioCard>
@@ -183,7 +185,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
         </ModalBody>
         <ModalFooter>
           <Button variant="outline" onClick={props.onClose}>
-            {t('cancel')}
+            {t<string>('cancel')}
           </Button>
           <Box w={2} />
           <Button onClick={handleConfirm}>Confirm</Button>

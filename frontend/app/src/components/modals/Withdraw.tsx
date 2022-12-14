@@ -72,7 +72,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
   const validationSchema = object().shape({
     amount: number()
       .min(0.000001)
-      .max(maxValue(), `${t('insufficientBalance')}`)
+      .max(maxValue(), `${t<string>('insufficientBalance')}`)
       .required(t('required')),
     to: string()
       .test({
@@ -87,7 +87,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
       try {
         const result = await withdraw(Number(oven.key.id), Number(data.amount), data.to);
         handleProcessing(result);
-      } catch (error) {
+      } catch (error: any) {
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         toast({
           description: errorText,
@@ -122,7 +122,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            {t('withdrawTezos')}
+            {t<string>('withdrawTezos')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -135,7 +135,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                {t('to')}
+                {t<string>('to')}
               </FormLabel>
               <Input
                 readOnly
@@ -150,7 +150,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
             </FormControl>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                {t('amount')}
+                {t<string>('amount')}
               </FormLabel>
               <InputGroup>
                 <Input
