@@ -10,6 +10,7 @@
 
 (* Types for oven *)
 #include "oven_types.mligo"
+#include "./common_types.mligo"
 (* End of oven types *)
 
 
@@ -39,6 +40,7 @@ type storage = {
   ctez_fa12_address : address ; (* address of the fa12 contract managing the ctez token *)
   cfmm_address : address ; (* address of the cfmm providing the price feed *)
   fee_index : nat ;
+  metadata : contract_metadata ;
 }
 
 type result = (operation list) * storage

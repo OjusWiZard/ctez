@@ -1,5 +1,6 @@
 #include "errors.mligo"
 #include "newton.mligo"
+#include "./common_types.mligo"
 
 (* Check attic/cfmm_tez_ctez.old.preprocessed.mligo to compare with the old version of ctez *)
 
@@ -94,6 +95,7 @@ type storage =
     lqtAddress : address ;
     lastOracleUpdate : timestamp ;
     consumerEntrypoint : address ;
+    metadata : contract_metadata ;
   }
 
 (*  Type Synonyms *)
@@ -209,7 +211,7 @@ let marginal_price (tez : nat) (cash : nat) (target : nat) : (nat * nat) =
 
  [@view] let cashPool ((), s : unit * storage) : nat = s.cashPool
  [@view] let tezPool ((), s : unit * storage) : nat = s.tezPool
- [@view] let storage ((), s: unit * storage) : storage = s
+//  [@view] let storage ((), s: unit * storage) : storage = s
 
 
 (* =============================================================================
