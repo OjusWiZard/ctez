@@ -109,17 +109,20 @@ const Swap: React.FC = () => {
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
             ? await cashToToken({
-              amount: formData.amount,
-              deadline,
+              outputCfmmContract: process.env.REACT_APP_CTEZ_CFMM_CONTRACT as string,
               minTokensBought: minReceived,
               to: userAddress,
+              rounds: 4,
+              deadline,
+              amount: formData.amount,
             })
             : await tokenToCash(
               {
                 deadline,
-                minCashBought: minReceived,
+                minTezBought: minReceived,
                 to: userAddress,
-                tokensSold: formData.amount,
+                cashSold: formData.amount,
+                rounds: 4,
               },
               userAddress,
             );
@@ -140,7 +143,7 @@ const Swap: React.FC = () => {
 
   useEffect(() => {
     if (cfmmStorage && values.amount) {
-      const { tokenPool, cashPool } = cfmmStorage;
+      const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
       const invariant = Number(cashPool) * Number(tokenPool);
       let initialPrice: number;
       const SwapAmount = values.amount * 1e6;

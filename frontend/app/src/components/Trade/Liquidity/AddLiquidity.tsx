@@ -37,7 +37,7 @@ const AddLiquidity: React.FC = () => {
   const calcMaxToken = useCallback(
     (cashDeposited: number, setFieldValue: (arg0: string, arg1: number) => void) => {
       if (cfmmStorage) {
-        const { tokenPool, cashPool, lqtTotal } = cfmmStorage;
+        const { cashPool: tokenPool, tezPool: cashPool, lqtTotal } = cfmmStorage;
         const cash = cashDeposited * 1e6;
         const max =
           Math.ceil(((cash * tokenPool.toNumber()) / cashPool.toNumber()) * (1 + slippage * 0.01)) /
@@ -87,7 +87,7 @@ const AddLiquidity: React.FC = () => {
           deadline,
           amount: formData.amount,
           owner: userAddress,
-          maxTokensDeposited: formData.ctezAmount,
+          maxCashDeposited: formData.ctezAmount,
           minLqtMinted: minLQT,
         };
         const result = await addLiquidity(data);

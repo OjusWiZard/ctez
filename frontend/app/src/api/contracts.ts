@@ -45,15 +45,15 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
 
   const prevTarget = Number(cTez7dayStorage.target) / 2 ** 48;
   const currentTarget = cTezStorage.target.toNumber() / 2 ** 48;
-  const currentPrice = cfmmStorage.cashPool.toNumber() / cfmmStorage.tokenPool.toNumber();
+  const currentPrice = cfmmStorage.tezPool.toNumber() / cfmmStorage.cashPool.toNumber();
   const premium = currentPrice === currentTarget ? 0 : currentPrice / currentTarget - 1.0;
   const drift = cTezStorage.drift.toNumber();
   const currentAnnualDrift = (1.0 + drift / 2 ** 48) ** (365.25 * 24 * 3600) - 1.0;
   const annualDriftPastWeek =
     (currentTarget / prevTarget) **
-      ((365.25 * 24 * 3600) / (timestamp_lastBlock_seconds - timestamp_past_seconds)) -
+    ((365.25 * 24 * 3600) / (timestamp_lastBlock_seconds - timestamp_past_seconds)) -
     1.0;
-  const totalLiquidity = (cfmmStorage.cashPool.toNumber() * 2) / 1e6;
+  const totalLiquidity = (cfmmStorage.tezPool.toNumber() * 2) / 1e6;
   return {
     originalTarget: cTezStorage.target.toNumber(),
     currentTarget: currentTarget.toFixed(6),
@@ -111,9 +111,9 @@ export const isMonthFromLiquidation = (
 
   return (
     outstandingCtez *
-      scaledTarget *
-      (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
-      (16 / 15) >
+    scaledTarget *
+    (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
+    (16 / 15) >
     tezBalance
   );
 };

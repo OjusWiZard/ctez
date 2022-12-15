@@ -47,7 +47,7 @@ const RemoveLiquidity: React.FC = () => {
           tokenWithdraw: 0,
         });
       } else if (cfmmStorage) {
-        const { cashPool, tokenPool, lqtTotal } = cfmmStorage;
+        const { tezPool: cashPool, cashPool: tokenPool, lqtTotal } = cfmmStorage;
         const cashWithdraw =
           ((lqtBurned * 1e6 * cashPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
         const tokenWithdraw =
@@ -87,7 +87,7 @@ const RemoveLiquidity: React.FC = () => {
           to: userAddress,
           lqtBurned: Number(formData.lqtBurned) * 1e6,
           minCashWithdrawn: otherValues.cashWithdraw,
-          minTokensWithdrawn: otherValues.tokenWithdraw,
+          minTezWithdrawn: otherValues.tokenWithdraw,
         };
         const result = await removeLiquidity(data, userAddress);
         handleProcessing(result);

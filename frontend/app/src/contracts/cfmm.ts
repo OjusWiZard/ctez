@@ -12,8 +12,8 @@ import {
   CfmmStorage,
   ErrorType,
   RemoveLiquidityParams,
-  TokenToCashParams,
-  TokenToTokenParams,
+  CashToTezParams,
+  TezToTokenParams,
 } from '../interfaces';
 import { CFMM_ADDRESS } from '../utils/globals';
 import { getTezosInstance } from './client';
@@ -74,7 +74,7 @@ export const addLiquidity = async (args: AddLiquidityParams): Promise<WalletOper
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
     CTezFa12,
     args.owner,
-    args.maxTokensDeposited,
+    args.maxCashDeposited,
   );
   const batch = tezos.wallet.batch([
     ...batchOps,
@@ -84,7 +84,7 @@ export const addLiquidity = async (args: AddLiquidityParams): Promise<WalletOper
         .addLiquidity(
           args.owner,
           args.minLqtMinted,
-          args.maxTokensDeposited * 1e6,
+          args.maxCashDeposited * 1e6,
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -120,7 +120,7 @@ export const removeLiquidity = async (
           args.to,
           args.lqtBurned,
           args.minCashWithdrawn * 1e6,
-          args.minTokensWithdrawn * 1e6,
+          args.minTezWithdrawn * 1e6,
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -134,11 +134,11 @@ export const removeLiquidity = async (
   return hash;
 };
 
-export const cashToToken = async (args: CashToTokenParams): Promise<TransactionWalletOperation> => {
+export const cashToToken = async (args: TezToTokenParams): Promise<TransactionWalletOperation> => {
   const operation = await executeMethod(
     cfmm,
-    'cashToToken',
-    [args.to, Math.floor(args.minTokensBought * 1e6), args.deadline.toISOString()],
+    'tezToToken',
+    [args.outputCfmmContract, Math.floor(args.minTokensBought * 1e6), args.to, 4, args.deadline.toISOString()],
     undefined,
     args.amount * 1e6,
     true,
@@ -147,7 +147,7 @@ export const cashToToken = async (args: CashToTokenParams): Promise<TransactionW
 };
 
 export const tokenToCash = async (
-  args: TokenToCashParams,
+  args: CashToTezParams,
   userAddress: string,
 ): Promise<WalletOperation> => {
   const tezos = getTezosInstance();
@@ -155,7 +155,7 @@ export const tokenToCash = async (
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
     CTezFa12,
     userAddress,
-    args.tokensSold,
+    args.cashSold,
   );
 
   const batch = tezos.wallet.batch([
@@ -165,8 +165,8 @@ export const tokenToCash = async (
       ...cfmm.methods
         .tokenToCash(
           args.to,
-          args.tokensSold * 1e6,
-          Math.floor(args.minCashBought * 1e6),
+          args.cashSold * 1e6,
+          Math.floor(args.minTezBought * 1e6),
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -181,13 +181,13 @@ export const tokenToCash = async (
 };
 
 export const tokenToToken = async (
-  args: TokenToTokenParams,
+  args: TezToTokenParams,
 ): Promise<TransactionWalletOperation> => {
-  const operation = await executeMethod(cfmm, 'tokenToToken', [
+  const operation = await executeMethod(cfmm, 'tezToToken', [
     args.outputCfmmContract,
     args.minTokensBought * 1e6,
     args.to,
-    args.tokensSold * 1e6,
+    args.rounds,
     args.deadline.toISOString(),
   ]);
   return operation;

@@ -4,7 +4,7 @@ export interface AddLiquidityParams {
   owner: string;
   deadline: Date;
   minLqtMinted: number;
-  maxTokensDeposited: number;
+  maxCashDeposited: number;
   amount: number;
 }
 
@@ -12,7 +12,7 @@ export interface RemoveLiquidityParams {
   to: string;
   deadline: Date;
   lqtBurned: number;
-  minTokensWithdrawn: number;
+  minTezWithdrawn: number;
   minCashWithdrawn: number;
 }
 
@@ -24,30 +24,33 @@ export interface CashToTokenParams {
   // cashSold: number; # For !CASH_IS_TEZ
 }
 
-export interface TokenToCashParams {
+export interface CashToTezParams {
   to: string;
-  tokensSold: number;
-  minCashBought: number;
+  cashSold: number;
+  minTezBought: number;
   deadline: Date;
+  rounds: number;
 }
 
-export interface TokenToTokenParams {
+export interface TezToTokenParams {
   outputCfmmContract: string;
   minTokensBought: number;
   to: string;
-  tokensSold: number;
+  rounds: number;
   deadline: Date;
+  amount: number;
 }
 
 export interface CfmmStorage {
-  tokenPool: BigNumber;
   cashPool: BigNumber;
-  pendingPoolUpdates: BigNumber;
-  tokenAddress: string;
+  tezPool: BigNumber;
+  ctez_address: string;
   lqtAddress: string;
   lastOracleUpdate: Date;
   consumerEntrypoint: string;
   lqtTotal: BigNumber;
+  target: BigNumber;
+  cashAddress: string;
 }
 
 export interface UserLQTData {
