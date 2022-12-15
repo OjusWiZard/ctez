@@ -18,12 +18,12 @@ let storage = {{
   ovens = (Big_map.empty : (oven_handle, oven) big_map) ;
   target = {target}n ;
   drift = {drift} ;
-  last_drift_update = ("{origin.strftime(u"%Y-%m-%dT%H:%M:%SZ")}" : timestamp) ;
+  last_update = ("{origin.strftime(u"%Y-%m-%dT%H:%M:%SZ")}" : timestamp) ;
   ctez_fa12_address = ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) ;
   cfmm_address = ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) ;
 }} in
 
-let (_, storage) = cfmm_price (storage, {mutez}n, {muctez}n) in
+let (_, storage) = cfmm_info (storage, {mutez}n, {muctez}n) in
 (storage.target, storage.drift)
 """)
 

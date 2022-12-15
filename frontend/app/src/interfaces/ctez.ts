@@ -50,9 +50,10 @@ export interface CTezStorage {
   ovens: MichelsonMap<oven_handle, OvenStorage>;
   target: BigNumber;
   drift: BigNumber;
-  last_drift_update: Date;
+  last_update: Date;
   ctez_fa12_address: string;
   cfmm_address: string;
+  fee_index: BigNumber;
 }
 
 export interface CTezTzktStorage {
@@ -61,7 +62,8 @@ export interface CTezTzktStorage {
   target: string;
   cfmm_address: string;
   ctez_fa12_address: string;
-  last_drift_update: string;
+  last_update: string;
+  fee_index: BigNumber;
 }
 
 export interface AllOvenDatum {
