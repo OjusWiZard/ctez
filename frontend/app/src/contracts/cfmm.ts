@@ -138,7 +138,7 @@ export const cashToToken = async (args: TezToTokenParams): Promise<TransactionWa
   const operation = await executeMethod(
     cfmm,
     'tezToToken',
-    [args.outputCfmmContract, Math.floor(args.minTokensBought * 1e6), args.to, 4, args.deadline.toISOString()],
+    [args.outputCfmmContract, Math.floor(args.minTokensBought * 1e6), args.to, args.deadline.toISOString(), args.rounds],
     undefined,
     args.amount * 1e6,
     true,
