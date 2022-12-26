@@ -109,11 +109,10 @@ const Swap: React.FC = () => {
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
             ? await cashToToken({
-              outputCfmmContract: process.env.REACT_APP_CFMM_CONTRACT as string,
-              minTokensBought: minReceived,
               to: userAddress,
-              rounds: 4,
+              minCashBought: minReceived,
               deadline,
+              rounds: 4,
               amount: formData.amount,
             })
             : await tokenToCash(

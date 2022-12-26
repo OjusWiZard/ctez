@@ -16,10 +16,11 @@ export interface RemoveLiquidityParams {
   minCashWithdrawn: number;
 }
 
-export interface CashToTokenParams {
+export interface TezToCashParams {
   to: string;
-  minTokensBought: number;
+  minCashBought: number;
   deadline: Date;
+  rounds: number;
   amount: number;
   // cashSold: number; # For !CASH_IS_TEZ
 }
@@ -36,9 +37,8 @@ export interface TezToTokenParams {
   outputCfmmContract: string;
   minTokensBought: number;
   to: string;
-  rounds: number;
   deadline: Date;
-  amount: number;
+  rounds: number;
 }
 
 export interface CfmmStorage {

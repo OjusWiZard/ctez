@@ -8,7 +8,7 @@ import {
 import BigNumber from 'bignumber.js';
 import {
   AddLiquidityParams,
-  CashToTokenParams,
+  TezToCashParams,
   CfmmStorage,
   ErrorType,
   RemoveLiquidityParams,
@@ -134,11 +134,11 @@ export const removeLiquidity = async (
   return hash;
 };
 
-export const cashToToken = async (args: TezToTokenParams): Promise<TransactionWalletOperation> => {
+export const cashToToken = async (args: TezToCashParams): Promise<TransactionWalletOperation> => {
   const operation = await executeMethod(
     cfmm,
-    'tezToToken',
-    [args.outputCfmmContract, Math.floor(args.minTokensBought * 1e6), args.to, args.deadline.toISOString(), args.rounds],
+    'tezToCash',
+    [args.to, Math.floor(args.minCashBought * 1e6), args.deadline.toISOString(), args.rounds],
     undefined,
     args.amount * 1e6,
     true,
@@ -180,15 +180,15 @@ export const tokenToCash = async (
   return batchOperation;
 };
 
-export const tokenToToken = async (
+export const tezToToken = async (
   args: TezToTokenParams,
 ): Promise<TransactionWalletOperation> => {
   const operation = await executeMethod(cfmm, 'tezToToken', [
     args.outputCfmmContract,
     args.minTokensBought * 1e6,
     args.to,
-    args.rounds,
     args.deadline.toISOString(),
+    args.rounds,
   ]);
   return operation;
 };
