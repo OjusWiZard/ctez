@@ -26,7 +26,7 @@ import {
   TToken,
 } from '../../../constants/swap';
 import { CTezIcon, TezIcon } from '../../icons';
-import { cashToToken, cfmmError, tokenToCash } from '../../../contracts/cfmm';
+import { cashToToken, cfmmError, cashToTez } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button';
@@ -115,7 +115,7 @@ const Swap: React.FC = () => {
               rounds: 4,
               amount: formData.amount,
             })
-            : await tokenToCash(
+            : await cashToTez(
               {
                 deadline,
                 minTezBought: minReceived,

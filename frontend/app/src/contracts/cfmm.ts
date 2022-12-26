@@ -146,7 +146,7 @@ export const cashToToken = async (args: TezToCashParams): Promise<TransactionWal
   return operation;
 };
 
-export const tokenToCash = async (
+export const cashToTez = async (
   args: CashToTezParams,
   userAddress: string,
 ): Promise<WalletOperation> => {
@@ -163,11 +163,12 @@ export const tokenToCash = async (
     {
       kind: OpKind.TRANSACTION,
       ...cfmm.methods
-        .tokenToCash(
+        .cashToTez(
           args.to,
           args.cashSold * 1e6,
           Math.floor(args.minTezBought * 1e6),
           args.deadline.toISOString(),
+          4
         )
         .toTransferParams(),
     },
