@@ -6,7 +6,7 @@ const HomePage = lazy(() => import('../pages/home'));
 const OvensPage = lazy(() => import('../pages/ovens'));
 const OvenIdPage = lazy(() => import('../pages/ovens/[ovenId]'));
 const TradePage = lazy(() => import('../pages/trade'));
-const AnalyticsPage = lazy(() => import('../pages/analytics'));
+// const AnalyticsPage = lazy(() => import('../pages/analytics'));
 
 
 export const routes: ComponentRoute[] = [
@@ -19,11 +19,11 @@ export const routes: ComponentRoute[] = [
     Component: <OvensPage />,
     exact: true,
   },
-  {
-    path: '/analytics',
-    Component: <AnalyticsPage />,
-    exact: true,
-  },
+  // {
+  //   path: '/analytics',
+  //   Component: <AnalyticsPage />,
+  //   exact: true,
+  // },
   {
     path: '/ovens',
     Component: <OvensPage />,
