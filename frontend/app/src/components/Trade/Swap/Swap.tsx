@@ -26,7 +26,7 @@ import {
   TToken,
 } from '../../../constants/swap';
 import { CTezIcon, TezIcon } from '../../icons';
-import { cashToToken, cfmmError, cashToTez } from '../../../contracts/cfmm';
+import { tezToCash, cfmmError, cashToTez } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button';
@@ -108,7 +108,7 @@ const Swap: React.FC = () => {
         const deadline = addMinutes(deadlineFromStore)(new Date());
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
-            ? await cashToToken({
+            ? await tezToCash({
               to: userAddress,
               minCashBought: minReceived,
               deadline,
