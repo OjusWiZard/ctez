@@ -204,10 +204,12 @@ const Swap: React.FC = () => {
     const c = await getCfmmStorage()
     setTarget(c.target.toNumber())
   }
-
   useEffect(() => {
     fetchTarget()
-    if (cfmmStorage && values.amount) {
+  },[cfmmStorage])
+
+  useEffect(() => {
+    if (cfmmStorage && values.amount && (target>0)) {
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
       const invariant = Number(cashPool) * Number(tokenPool);
       let initialPrice: number;
