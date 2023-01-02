@@ -36,6 +36,7 @@ import { formatNumberStandard, inputFormatNumberStandard } from '../../../utils/
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [minBuyValue, setMinBuyValue] = useState(0);
+  const [target, setTarget] = useState(0);
   const [formType, setFormType] = useState<TFormType>(FORM_TYPE.TEZ_CTEZ);
   const { data: cfmmStorage } = useCfmmStorage();
   const { data: balance } = useUserBalance(userAddress);
@@ -165,40 +166,39 @@ const Swap: React.FC = () => {
         const new_du_dy = util_arr[1];
         const dy = p.dy + Math.abs((new_u - p.u) / new_du_dy);
         return newton({x:p.x , y:p.y ,dx: p.dx , dy ,u: p.u ,n: p.n - 1});
-        // x = x; y = y; dx = dx ; dy = 0n ; u = u; n = rounds
     
   }
 
-  // (x, y, dx, rounds : nat * nat * nat * int) : nat
   const newton_dx_to_dy =(
     args :any
   ) => {
     const xp = args.x + args.dx ;
-    // let _xp2 = xp * xp ;
     const u = util(args.x,args.y)[0] ;
     return newton({x:args.x , y:args.y, dx:args.dx , dy:0 , u  ,n:args.rounds})
   }
 
 
-// tezPool storage.cashPool tezSold storage.target rounds
-// (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat 
   const trade_dtez_for_dcash = (
     args : any
   ) =>{
-    const x = args.tez * (2** 48); // eslint-disable-line no-bitwise
+    const x = args.tez * (2** 48); 
     const y = args.target * args.cash;
-    const dx = args.dtez * (2** 48); // eslint-disable-line no-bitwise
-    // console.log(x, y, dx, args.rounds, "trade_dtez_for_dcash")
+    const dx = args.dtez * (2** 48); 
     const dy_approx = newton_dx_to_dy({x, y, dx, rounds:args.rounds});
     const dcash_approx = dy_approx / args.target;
-    if (args.cash - dcash_approx <= 0) {
-      console.log("error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE")
-    }
-    else
-        return dcash_approx
+    return dcash_approx
   }
-  const [target, setTarget] = useState(0);
 
+  const trade_dcash_for_dtez = (
+    args : any
+  ) => {
+    const x = args.target * args.cash; 
+    const y = args.tez * (2** 48);
+    const dx = args.target * args.dtez; 
+    const dy_approx = newton_dx_to_dy({x, y, dx, rounds:args.rounds});
+    const dtez_approx = dy_approx / (2** 48);
+    return dtez_approx
+  }
 
   const fetchTarget = async () =>{
     const c = await getCfmmStorage()
@@ -232,19 +232,16 @@ const Swap: React.FC = () => {
       const priceImpact1 = ((initialPrice - recievedPrice) * 100) / initialPrice;
       setpriceImpact(priceImpact1);
       const cashSold = values.amount * 1e6;
-      const [aPool, bPool] =
-        formType === FORM_TYPE.TEZ_CTEZ ? [tokenPool, cashPool] : [cashPool, tokenPool];
-      let tokWithoutSlippage = (cashSold * 9999 * aPool.toNumber()) / (bPool.toNumber() * 10000 + cashSold * 9999) / 1e6;
-      // (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat 
-      // tezPool storage.cashPool tezSold storage.target rounds
       console.log(target,"target value !!")
-      const newSlippage = trade_dtez_for_dcash({tez:cashPool , cash:tokenPool , dtez: cashSold , target , rounds: 4});
-      // console.log("slippage update !!" , newSlippage)
-      if (newSlippage){
-        const afterFee = newSlippage * 9999 /10000;
-        // console.log(tokWithoutSlippage,afterFee,afterFee/1e6,"new math")
-        tokWithoutSlippage = afterFee/1e6;
+      let  tokWithoutSlippage = 0
+      if (formType === FORM_TYPE.TEZ_CTEZ){
+        tokWithoutSlippage = trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: cashSold , target , rounds: 4});
       }
+      else {
+        tokWithoutSlippage = trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: cashSold , target , rounds: 4});
+        console.log("here",tokWithoutSlippage)
+      }
+      tokWithoutSlippage = (tokWithoutSlippage * 9999 / 10000)/1e6
       setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
       const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
       setMinReceived(minRece);
