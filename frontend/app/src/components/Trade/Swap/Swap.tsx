@@ -26,7 +26,7 @@ import {
   TToken,
 } from '../../../constants/swap';
 import { CTezIcon, TezIcon } from '../../icons';
-import { tezToCash, cfmmError, cashToTez } from '../../../contracts/cfmm';
+import { tezToCash, cfmmError, cashToTez , getCfmmStorage } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button';
@@ -140,21 +140,87 @@ const Swap: React.FC = () => {
     validationSchema,
   });
 
+  const util = (x : number, y : number) =>{
+    const plus = x + y;
+    const minus = x - y ;
+    const plus_2 = plus * plus;
+    const plus_4 = plus_2 * plus_2;
+    const plus_8 = plus_4 * plus_4;
+    const plus_7 = plus_4 * plus_2 * plus;
+    const minus_2 = minus * minus;
+    const minus_4 = minus_2 * minus_2;
+    const minus_8 = minus_4 * minus_4;
+    const minus_7 = minus_4 * minus_2 * minus;
+    return [Math.abs(plus_8 - minus_8), 8 * (Math.abs(minus_7 + plus_7))] // 8n to 8
+
+
+  }
+
+  const newton = (p:any):number => {
+    if (p.n === 0) {
+        return p.dy
+    }
+        const util_arr =  util((p.x + p.dx),(Math.abs(p.y - p.dy)));
+        const new_u = util_arr[0];
+        const new_du_dy = util_arr[1];
+        const dy = p.dy + Math.abs((new_u - p.u) / new_du_dy);
+        return newton({x:p.x , y:p.y ,dx: p.dx , dy ,u: p.u ,n: p.n - 1});
+        // x = x; y = y; dx = dx ; dy = 0n ; u = u; n = rounds
+    
+  }
+
+  // (x, y, dx, rounds : nat * nat * nat * int) : nat
+  const newton_dx_to_dy =(
+    args :any
+  ) => {
+    const xp = args.x + args.dx ;
+    // let _xp2 = xp * xp ;
+    const u = util(args.x,args.y)[0] ;
+    return newton({x:args.x , y:args.y, dx:args.dx , dy:0 , u  ,n:args.rounds})
+  }
+
+
+// tezPool storage.cashPool tezSold storage.target rounds
+// (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat 
+  const trade_dtez_for_dcash = (
+    args : any
+  ) =>{
+    const x = args.tez * (2** 48); // eslint-disable-line no-bitwise
+    const y = args.target * args.cash;
+    const dx = args.dtez * (2** 48); // eslint-disable-line no-bitwise
+    // console.log(x, y, dx, args.rounds, "trade_dtez_for_dcash")
+    const dy_approx = newton_dx_to_dy({x, y, dx, rounds:args.rounds});
+    const dcash_approx = dy_approx / args.target;
+    if (args.cash - dcash_approx <= 0) {
+      console.log("error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE")
+    }
+    else
+        return dcash_approx
+  }
+  const [target, setTarget] = useState(0);
+
+
+  const fetchTarget = async () =>{
+    const c = await getCfmmStorage()
+    setTarget(c.target.toNumber())
+  }
+
   useEffect(() => {
+    fetchTarget()
     if (cfmmStorage && values.amount) {
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
       const invariant = Number(cashPool) * Number(tokenPool);
       let initialPrice: number;
       const SwapAmount = values.amount * 1e6;
       let recievedPrice: number;
-      if (formType === FORM_TYPE.CTEZ_TEZ) {
+      if (formType === FORM_TYPE.CTEZ_TEZ) { // ctez to tez
         // 1 ctez = 11 tez
         initialPrice = Number(cashPool) / Number(tokenPool);
         const newTokenPool = Number(tokenPool) + SwapAmount * 0.9995;
         const newCashPool = invariant / newTokenPool;
         const difference = Number(cashPool) - newCashPool;
         recievedPrice = difference / SwapAmount;
-      } else {
+      } else { // tez to ctez
         initialPrice = Number(tokenPool) / Number(cashPool);
         const newCashPool = Number(cashPool) + SwapAmount * 0.9995;
         const newTokenPool = invariant / newCashPool;
@@ -166,8 +232,17 @@ const Swap: React.FC = () => {
       const cashSold = values.amount * 1e6;
       const [aPool, bPool] =
         formType === FORM_TYPE.TEZ_CTEZ ? [tokenPool, cashPool] : [cashPool, tokenPool];
-      const tokWithoutSlippage =
-        (cashSold * 9995 * aPool.toNumber()) / (bPool.toNumber() * 10000 + cashSold * 9995) / 1e6;
+      let tokWithoutSlippage = (cashSold * 9999 * aPool.toNumber()) / (bPool.toNumber() * 10000 + cashSold * 9999) / 1e6;
+      // (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat 
+      // tezPool storage.cashPool tezSold storage.target rounds
+      console.log(target,"target value !!")
+      const newSlippage = trade_dtez_for_dcash({tez:cashPool , cash:tokenPool , dtez: cashSold , target , rounds: 4});
+      // console.log("slippage update !!" , newSlippage)
+      if (newSlippage){
+        const afterFee = newSlippage * 9999 /10000;
+        // console.log(tokWithoutSlippage,afterFee,afterFee/1e6,"new math")
+        tokWithoutSlippage = afterFee/1e6;
+      }
       setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
       const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
       setMinReceived(minRece);
