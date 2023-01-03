@@ -218,13 +218,13 @@ const Swap: React.FC = () => {
       if (formType === FORM_TYPE.CTEZ_TEZ) { // ctez to tez
         // 1 ctez = 11 tez
         initialPrice = Number(cashPool) / Number(tokenPool);
-        const newTokenPool = Number(tokenPool) + SwapAmount * 0.9995;
+        const newTokenPool = Number(tokenPool) + SwapAmount * 0.9999;
         const newCashPool = invariant / newTokenPool;
         const difference = Number(cashPool) - newCashPool;
         recievedPrice = difference / SwapAmount;
       } else { // tez to ctez
         initialPrice = Number(tokenPool) / Number(cashPool);
-        const newCashPool = Number(cashPool) + SwapAmount * 0.9995;
+        const newCashPool = Number(cashPool) + SwapAmount * 0.9999;
         const newTokenPool = invariant / newCashPool;
         const difference = Number(tokenPool) - newTokenPool;
         recievedPrice = difference / SwapAmount;
