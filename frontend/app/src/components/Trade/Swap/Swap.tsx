@@ -85,10 +85,7 @@ const Swap: React.FC = () => {
   const maxValue = (): number =>
     formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez || 0.0 : balance?.xtz || 0.0;
 
-  const rate = (): number =>
-    formType === FORM_TYPE.CTEZ_TEZ
-      ? formatNumberStandard(baseStats?.currentPrice ?? 1)
-      : formatNumberStandard(1 / Number(baseStats?.currentPrice ?? 1));
+
 
   const validationSchema = Yup.object().shape({
     slippage: Yup.number().min(0).optional(),
@@ -201,8 +198,9 @@ const Swap: React.FC = () => {
   }
 
   const fetchTarget = async () =>{
-    const c = await getCfmmStorage()
-    setTarget(c.target.toNumber())
+    if(cfmmStorage)
+    {const c = cfmmStorage;
+    setTarget(c.target.toNumber())}
   }
   useEffect(() => {
     fetchTarget()
@@ -210,38 +208,56 @@ const Swap: React.FC = () => {
 
   useEffect(() => {
     if (cfmmStorage && values.amount && (target>0)) {
+      console.log(cfmmStorage,baseStats)
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
       const invariant = Number(cashPool) * Number(tokenPool);
       let initialPrice: number;
       const SwapAmount = values.amount * 1e6;
       let recievedPrice: number;
-      if (formType === FORM_TYPE.CTEZ_TEZ) { // ctez to tez
-        // 1 ctez = 11 tez
-        initialPrice = Number(cashPool) / Number(tokenPool);
-        const newTokenPool = Number(tokenPool) + SwapAmount * 0.9999;
-        const newCashPool = invariant / newTokenPool;
-        const difference = Number(cashPool) - newCashPool;
-        recievedPrice = difference / SwapAmount;
-      } else { // tez to ctez
-        initialPrice = Number(tokenPool) / Number(cashPool);
-        const newCashPool = Number(cashPool) + SwapAmount * 0.9999;
-        const newTokenPool = invariant / newCashPool;
-        const difference = Number(tokenPool) - newTokenPool;
-        recievedPrice = difference / SwapAmount;
-      }
-      const priceImpact1 = ((initialPrice - recievedPrice) * 100) / initialPrice;
-      setpriceImpact(priceImpact1);
       const cashSold = values.amount * 1e6;
-      console.log(target,"target value !!")
       let  tokWithoutSlippage = 0
       if (formType === FORM_TYPE.TEZ_CTEZ){
+        // console.log(cashPool.toNumber(),tokenPool.toNumber() , cashSold , target , "swap math");
         tokWithoutSlippage = trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: cashSold , target , rounds: 4});
+        console.log()
       }
       else {
         tokWithoutSlippage = trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: cashSold , target , rounds: 4});
         console.log("here",tokWithoutSlippage)
       }
       tokWithoutSlippage = (tokWithoutSlippage * 9999 / 10000)/1e6
+      // if (formType === FORM_TYPE.CTEZ_TEZ) { // ctez to tez
+      //   // 1 ctez = 11 tez
+      //   initialPrice = Number(cashPool) / Number(tokenPool);
+      //   const newTokenPool = Number(tokenPool) + SwapAmount * 0.9999;
+      //   const newCashPool = invariant / newTokenPool;
+      //   const difference = Number(cashPool) - newCashPool;
+      //   recievedPrice = difference / SwapAmount;
+      // } else { // tez to ctez
+      //   initialPrice = Number(tokenPool) / Number(cashPool);
+      //   const newCashPool = Number(cashPool) + SwapAmount * 0.9999;
+      //   const newTokenPool = invariant / newCashPool;
+      //   const difference = Number(tokenPool) - newTokenPool;
+      //   recievedPrice = difference / SwapAmount;
+      // }
+      if (formType === FORM_TYPE.CTEZ_TEZ) { // ctez to tez
+        // 1 ctez = 11 tez
+        initialPrice = Number(cashPool) / Number(tokenPool);
+        const newTokenPool = Number(tokenPool) + SwapAmount * 0.9999;
+        const newCashPool = Number(cashPool) - tokWithoutSlippage*1e6;
+        const difference = Number(cashPool) - newCashPool;
+        recievedPrice = difference / SwapAmount;
+        // console.log(Number(tokenPool), tokWithoutSlippage*1e6,difference, recievedPrice, "math");
+      } else { // tez to ctez
+        initialPrice = Number(tokenPool) / Number(cashPool);
+        const newCashPool = Number(cashPool) + SwapAmount * 0.9999;
+        const newTokenPool = Number(tokenPool) - tokWithoutSlippage*1e6;
+        const difference = Number(tokenPool) - newTokenPool;
+        recievedPrice = difference / SwapAmount;
+        // console.log(Number(tokenPool), tokWithoutSlippage*1e6,difference, recievedPrice, "math");
+      }
+      const priceImpact1 = ((initialPrice - recievedPrice) * 100) / initialPrice;
+      setpriceImpact(priceImpact1);
       setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
       const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
       setMinReceived(minRece);
@@ -251,6 +267,25 @@ const Swap: React.FC = () => {
       setpriceImpact(0);
     }
   }, [cfmmStorage, formType, values.amount, slippage]);
+
+  const rate = (): number =>
+  {
+    let e_rate = 1;
+    if(cfmmStorage){
+      const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
+      // console.log(cashPool.toNumber(),tokenPool.toNumber() , 1000000 , target , "rate math");
+    formType === FORM_TYPE.TEZ_CTEZ
+    ? 
+    
+    e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
+    // formatNumberStandard(baseStats?.currentPrice ?? 1)
+    : e_rate = (trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
+
+    }
+    // console.log(e_rate,"rate")
+    return formatNumberStandard(e_rate);
+    
+  }
 
   const { buttonText, errorList } = useMemo(() => {
     const errorListLocal = Object.values(errors);
