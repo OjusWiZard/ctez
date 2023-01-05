@@ -212,6 +212,7 @@ const Swap: React.FC = () => {
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
       // const cashPool = 329222887605 ;
       // const tokenPool = 145510772615 ;
+      // const target = 312795887833064
       const invariant = Number(cashPool) * Number(tokenPool);
       // let initialPrice: number;
       const SwapAmount = values.amount * 1e6;
@@ -246,7 +247,7 @@ const Swap: React.FC = () => {
 
         // console.log(Number(tokenPool), tokWithoutSlippage*1e6,difference, recievedPrice, "math");
       }
-      const priceImpact1 = ((tokWithoutSlippage - newPrice) * 100) / tokWithoutSlippage;
+      const priceImpact1 = ((tokWithoutSlippage - newPrice) / tokWithoutSlippage) *100;
       console.log(tokWithoutSlippage,newPrice,priceImpact,"calc");
       setpriceImpact(Math.abs(priceImpact1));
       setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
