@@ -36,6 +36,7 @@ import { formatNumberStandard, inputFormatNumberStandard } from '../../../utils/
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [minBuyValue, setMinBuyValue] = useState(0);
+  const [rate, setRate] = useState(1);
   const [target, setTarget] = useState(0);
   const [formType, setFormType] = useState<TFormType>(FORM_TYPE.TEZ_CTEZ);
   const { data: cfmmStorage } = useCfmmStorage();
@@ -202,6 +203,22 @@ const Swap: React.FC = () => {
     {const c = cfmmStorage;
     setTarget(c.target.toNumber())}
   }
+
+  const rateCalc = (): number =>
+  {
+    let e_rate = 1;
+    if(cfmmStorage){
+      const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
+    formType === FORM_TYPE.TEZ_CTEZ
+    // ? e_rate = (trade_dtez_for_dcash({tez:327377914312 , cash:147174649364 , dtez: 1000000 , target:312813154712379 , rounds: 4})*9999/10000)/1e6
+    ? e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
+    : e_rate = (trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
+
+    }
+    return formatNumberStandard(e_rate);
+    
+  }
+  
   useEffect(() => {
     fetchTarget()
   },[cfmmStorage])
@@ -210,70 +227,44 @@ const Swap: React.FC = () => {
     if (cfmmStorage && values.amount && (target>0)) {
       console.log(cfmmStorage,baseStats)
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
-      // const cashPool = 329222887605 ;
-      // const tokenPool = 145510772615 ;
-      // const target = 312795887833064
-      const invariant = Number(cashPool) * Number(tokenPool);
-      // let initialPrice: number;
       const SwapAmount = values.amount * 1e6;
-      // let recievedPrice: number;
-      const cashSold = values.amount * 1e6;
-      let  tokWithoutSlippage = 0
+      let  tokenOut = 1;
       if (formType === FORM_TYPE.TEZ_CTEZ){
-        // console.log(cashPool.toNumber(),tokenPool.toNumber() , cashSold , target , "swap math");
-        // tokWithoutSlippage = trade_dtez_for_dcash({tez:cashPool , cash:tokenPool , dtez: SwapAmount , target , rounds: 4});
-        tokWithoutSlippage = trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: SwapAmount , target , rounds: 4});
+        tokenOut = trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: SwapAmount , target , rounds: 4});
       }
       else {
-        tokWithoutSlippage = trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: SwapAmount , target , rounds: 4});
+        tokenOut = trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: SwapAmount , target , rounds: 4});
       }
-      tokWithoutSlippage = (tokWithoutSlippage * 9999 / 10000)/1e6
-    
-      // let priceImpact = tokenOut.minus(nextTokenOut).dividedBy(tokenOut);
-      // priceImpact = priceImpact.multipliedBy(100);
-      // priceImpact = new BigNumber(Math.abs(Number(priceImpact)));
-      let newPrice = 1
+      console.log(tokenOut,"here before calc");
+      tokenOut = (tokenOut * 9999 / 10000)/1e6
+      console.log(" token out" ,tokenOut)
+      let newPrice : number;
       if (formType === FORM_TYPE.CTEZ_TEZ) { // ctez to tez
-        const newCashPool = Number(cashPool) - tokWithoutSlippage*1e6;
+        const newCashPool = Number(cashPool) - tokenOut*1e6;
         const newTokenPool = Number(tokenPool) + SwapAmount * 0.9999;
-        console.log(Number(cashPool), newCashPool, Number(tokenPool),newTokenPool,"check ctez to tez")
-        newPrice = (trade_dcash_for_dtez({tez:newCashPool , cash:newTokenPool , dtez: SwapAmount , target , rounds: 4})*9999/10000)/1e6
+        newPrice = (trade_dcash_for_dtez({tez:newCashPool , cash:newTokenPool , dtez: SwapAmount , target , rounds: 4}) * 9999 / 10000)/1e6
 
       } else { // tez to ctez
         const newCashPool = Number(cashPool) + SwapAmount * 0.9999;
-        const newTokenPool = Number(tokenPool) - tokWithoutSlippage*1e6;
-        console.log(Number(cashPool), newCashPool, Number(tokenPool),newTokenPool,"check tez to ctez")
-        newPrice = (trade_dtez_for_dcash({tez:newCashPool , cash:newTokenPool , dtez: SwapAmount , target , rounds: 4})*9999/10000)/1e6
-
-        // console.log(Number(tokenPool), tokWithoutSlippage*1e6,difference, recievedPrice, "math");
+        const newTokenPool = Number(tokenPool) - tokenOut*1e6;
+        newPrice = (trade_dtez_for_dcash({tez:newCashPool , cash:newTokenPool , dtez: SwapAmount , target , rounds: 4}) * 9999 / 10000)/1e6
       }
-      const priceImpact1 = ((tokWithoutSlippage - newPrice) / tokWithoutSlippage) *100;
-      console.log(tokWithoutSlippage,newPrice,priceImpact,"calc");
+      const priceImpact1 = ((tokenOut - newPrice) / tokenOut) *100;
+      console.log(tokenOut,newPrice,priceImpact,"calc");
+      setRate(formatNumberStandard(tokenOut/(SwapAmount/1e6)))
       setpriceImpact(Math.abs(priceImpact1));
-      setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
-      const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
+      setMinBuyValue(formatNumberStandard(tokenOut.toFixed(6)));
+      const minRece = tokenOut - (tokenOut * slippage) / 100;
       setMinReceived(minRece);
     } else {
+      setRate(rateCalc)
       setMinBuyValue(0);
       setMinReceived(0);
       setpriceImpact(0);
     }
   }, [cfmmStorage, formType, values.amount, slippage]);
 
-  const rate = (): number =>
-  {
-    let e_rate = 1;
-    if(cfmmStorage){
-      const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
-    formType === FORM_TYPE.TEZ_CTEZ
-    ? e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
-    : e_rate = (trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
-
-    }
-    // console.log(e_rate,"rate")
-    return formatNumberStandard(e_rate);
-    
-  }
+  
 
   const { buttonText, errorList } = useMemo(() => {
     const errorListLocal = Object.values(errors);
@@ -382,7 +373,7 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
         <Text color={text2} fontSize="xs">
-          1 {formType === FORM_TYPE.CTEZ_TEZ ? 'ctez' : 'tez'} = {rate()}{' '}
+          1 {formType === FORM_TYPE.CTEZ_TEZ ? 'ctez' : 'tez'} = {rate}{' '}
           {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
