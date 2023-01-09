@@ -33,6 +33,7 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
   const location = useLocation();
   const dispatch = useDispatch();
   const { data } = useCtezBaseStats();
+  console.log(data,"ctez stats");
 
   const [sideBarBackground, sidebarTxt, sidebarTopic] = useThemeColors([
     'sideBarBg',
@@ -74,6 +75,14 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
         <Flex direction="row">
           <Text color={sidebarTxt} fontSize="xs" cursor="default">
             Current Annual Drift
+          </Text>
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
+            {data?.currentAnnualDrift}%
+          </Text>
+        </Flex>
+        <Flex direction="row">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
+            APR
           </Text>
           <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.currentAnnualDrift}%

@@ -210,7 +210,7 @@ const Swap: React.FC = () => {
     if(cfmmStorage){
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
     formType === FORM_TYPE.TEZ_CTEZ
-    // ? e_rate = (trade_dtez_for_dcash({tez:327377914312 , cash:147174649364 , dtez: 1000000 , target:312813154712379 , rounds: 4})*9999/10000)/1e6
+    // ? e_rate = (trade_dtez_for_dcash({tez:321933970180 , cash:152108627515 , dtez: 1000000 , target:312972902617883 , rounds: 4})*9999/10000)/1e6
     ? e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
     : e_rate = (trade_dcash_for_dtez({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target , rounds: 4})*9999/10000)/1e6
 
@@ -225,11 +225,14 @@ const Swap: React.FC = () => {
 
   useEffect(() => {
     if (cfmmStorage && values.amount && (target>0)) {
-      console.log(cfmmStorage,baseStats)
       const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
+      // const cashPool = 321933970180;
+      // const tokenPool = 152108627515;
+      // const tr = 312972902617883;
       const SwapAmount = values.amount * 1e6;
       let  tokenOut = 1;
       if (formType === FORM_TYPE.TEZ_CTEZ){
+        // tokenOut = trade_dtez_for_dcash({tez:cashPool, cash:tokenPool , dtez: SwapAmount , target:tr , rounds: 4});
         tokenOut = trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: SwapAmount , target , rounds: 4});
       }
       else {
