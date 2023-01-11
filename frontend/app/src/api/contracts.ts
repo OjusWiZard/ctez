@@ -1,7 +1,7 @@
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { sub, format, differenceInDays } from 'date-fns';
-import { getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
+import { getCfmmFA12Storage, getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
 import { getCtezStorage } from '../contracts/ctez';
 import { BaseStats, CTezTzktStorage, OvenBalance, UserLQTData } from '../interfaces';
 import { CONTRACT_DEPLOYMENT_DATE, RPC_URL } from '../utils/globals';
@@ -29,10 +29,15 @@ export const getTimeStampOfBlock = async (block: number) => {
 };
 
 export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => {
+  console.log("stats calc start =============")
+
   const diffInDays = differenceInDays(new Date(), new Date(CONTRACT_DEPLOYMENT_DATE));
   const prevStorageDays = diffInDays >= 7 ? 7 : diffInDays;
   const cTezStorage = await getCtezStorage();
   const cfmmStorage = await getCfmmStorage();
+  console.log(cfmmStorage,"loggggg 1")
+  const cfmmFA12Storage = await getCfmmFA12Storage();
+  console.log(cfmmFA12Storage,"loggggg 2")
   const cTez7dayStorage = await getPrevCTezStorage(prevStorageDays, userAddress);
   const currentLevel = await getCurrentBlock();
   const timestampCurrent = await getTimeStampOfBlock(currentLevel);
@@ -46,14 +51,28 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   const prevTarget = Number(cTez7dayStorage.target) / 2 ** 48;
   const currentTarget = cTezStorage.target.toNumber() / 2 ** 48;
   const currentPrice = cfmmStorage.tezPool.toNumber() / cfmmStorage.cashPool.toNumber();
+  const cashPool = cfmmStorage.tezPool.toNumber();
+  const outstanding = cfmmFA12Storage.total_supply.toNumber();
+  let fee = (Math.abs(outstanding - 8*cashPool)*2**22)/outstanding;
+  //  (Bitwise.shift_left (abs (outstanding - 8n * cash_pool)) 22n) / (outstanding)
+  if (((cashPool * 16) < outstanding)||((cashPool * 8) > outstanding)) {
+    fee = 2097152;
+  }
+  const d = new Date(cTezStorage.last_update).getTimezoneOffset()
+  const delta = Math.abs(Date.now()- d);
+  // let delta = abs (Tezos.get_now () - storage.last_update) in
+  const new_fee_index = cTezStorage.fee_index.toNumber() + (delta*cTezStorage.fee_index.toNumber()*fee)/2**48 ;
+  const annual_fee = Math.exp(new_fee_index / ((2**48) * 365.25 * 24 * 3600));
+  console.log("stats log",d,delta,new_fee_index,annual_fee)
   const premium = currentPrice === currentTarget ? 0 : currentPrice / currentTarget - 1.0;
   const drift = cTezStorage.drift.toNumber();
   const currentAnnualDrift = (1.0 + drift / 2 ** 48) ** (365.25 * 24 * 3600) - 1.0;
   const annualDriftPastWeek =
-    (currentTarget / prevTarget) **
-    ((365.25 * 24 * 3600) / (timestamp_lastBlock_seconds - timestamp_past_seconds)) -
-    1.0;
+  (currentTarget / prevTarget) **
+  ((365.25 * 24 * 3600) / (timestamp_lastBlock_seconds - timestamp_past_seconds)) -
+  1.0;
   const totalLiquidity = (cfmmStorage.tezPool.toNumber() * 2) / 1e6;
+  console.log("stats calc done")
   return {
     originalTarget: cTezStorage.target.toNumber(),
     currentTarget: currentTarget.toFixed(6),
@@ -63,6 +82,7 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
     annualDriftPastWeek: (annualDriftPastWeek * 100).toFixed(2),
     totalLiquidity: totalLiquidity.toFixed(2),
     drift,
+    annual_fee ,
   };
 };
 

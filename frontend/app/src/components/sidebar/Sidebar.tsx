@@ -85,7 +85,7 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
             APR
           </Text>
           <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
-            {data?.currentAnnualDrift}%
+            {data?.annual_fee}%
           </Text>
         </Flex>
         {/* <Flex direction="row">
