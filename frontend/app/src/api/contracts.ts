@@ -54,16 +54,14 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   const cashPool = cfmmStorage.tezPool.toNumber();
   const outstanding = cfmmFA12Storage.total_supply.toNumber();
   let fee = (Math.abs(outstanding - 8*cashPool)*2**22)/outstanding;
-  //  (Bitwise.shift_left (abs (outstanding - 8n * cash_pool)) 22n) / (outstanding)
   if (((cashPool * 16) < outstanding)||((cashPool * 8) > outstanding)) {
     fee = 2097152;
   }
   const d = new Date(cTezStorage.last_update).getTimezoneOffset()
   const delta = Math.abs(Date.now()- d);
-  // let delta = abs (Tezos.get_now () - storage.last_update) in
   const new_fee_index = cTezStorage.fee_index.toNumber() + (delta*cTezStorage.fee_index.toNumber()*fee)/2**48 ;
   const annual_fee = Math.exp(new_fee_index / ((2**48) * 365.25 * 24 * 3600));
-  console.log("stats log",d,delta,new_fee_index,annual_fee)
+  console.log("Liquidity Fee", annual_fee)
   const premium = currentPrice === currentTarget ? 0 : currentPrice / currentTarget - 1.0;
   const drift = cTezStorage.drift.toNumber();
   const currentAnnualDrift = (1.0 + drift / 2 ** 48) ** (365.25 * 24 * 3600) - 1.0;
@@ -72,7 +70,6 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   ((365.25 * 24 * 3600) / (timestamp_lastBlock_seconds - timestamp_past_seconds)) -
   1.0;
   const totalLiquidity = (cfmmStorage.tezPool.toNumber() * 2) / 1e6;
-  console.log("stats calc done")
   return {
     originalTarget: cTezStorage.target.toNumber(),
     currentTarget: currentTarget.toFixed(6),
@@ -82,7 +79,7 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
     annualDriftPastWeek: (annualDriftPastWeek * 100).toFixed(2),
     totalLiquidity: totalLiquidity.toFixed(2),
     drift,
-    annual_fee ,
+    annual_fee: annual_fee.toFixed(6) ,
   };
 };
 
