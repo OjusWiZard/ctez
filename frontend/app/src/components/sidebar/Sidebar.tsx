@@ -33,7 +33,6 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
   const location = useLocation();
   const dispatch = useDispatch();
   const { data } = useCtezBaseStats();
-  console.log(data,"ctez stats");
 
   const [sideBarBackground, sidebarTxt, sidebarTopic] = useThemeColors([
     'sideBarBg',

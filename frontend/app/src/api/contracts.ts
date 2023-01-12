@@ -29,15 +29,12 @@ export const getTimeStampOfBlock = async (block: number) => {
 };
 
 export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => {
-  console.log("stats calc start =============")
 
   const diffInDays = differenceInDays(new Date(), new Date(CONTRACT_DEPLOYMENT_DATE));
   const prevStorageDays = diffInDays >= 7 ? 7 : diffInDays;
   const cTezStorage = await getCtezStorage();
   const cfmmStorage = await getCfmmStorage();
-  console.log(cfmmStorage,"loggggg 1")
   const cfmmFA12Storage = await getCfmmFA12Storage();
-  console.log(cfmmFA12Storage,"loggggg 2")
   const cTez7dayStorage = await getPrevCTezStorage(prevStorageDays, userAddress);
   const currentLevel = await getCurrentBlock();
   const timestampCurrent = await getTimeStampOfBlock(currentLevel);
