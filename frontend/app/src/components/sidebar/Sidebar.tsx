@@ -1,7 +1,7 @@
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import clsx from 'clsx';
 import { Text, Flex, Box, Image } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ReactComponent as MyOvens } from '../../assets/images/sidebar/myovens.svg';
@@ -19,8 +19,9 @@ import { ReactComponent as Logo } from '../../assets/images/sidebar/ctez.svg';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
-import { useCtezBaseStats } from '../../api/queries';
+import { useCfmmStorage, useCtezBaseStats } from '../../api/queries';
 import { useThemeColors } from '../../hooks/utilHooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 export interface Props {
   handleCollapsed: React.MouseEventHandler;
@@ -43,9 +44,72 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
   const handleCreateOvenClick = () => {
     dispatch(openModal(MODAL_NAMES.CREATE_OVEN));
   };
+  const [rate,setRate] = useState(1);
+  const { data: cfmmStorage } = useCfmmStorage();
+  const util = (x : number, y : number) =>{
+    const plus = x + y;
+    const minus = x - y ;
+    const plus_2 = plus * plus;
+    const plus_4 = plus_2 * plus_2;
+    const plus_8 = plus_4 * plus_4;
+    const plus_7 = plus_4 * plus_2 * plus;
+    const minus_2 = minus * minus;
+    const minus_4 = minus_2 * minus_2;
+    const minus_8 = minus_4 * minus_4;
+    const minus_7 = minus_4 * minus_2 * minus;
+    return [Math.abs(plus_8 - minus_8), 8 * (Math.abs(minus_7 + plus_7))] // 8n to 8
+}
+
+const newton = (p:any):number => {
+  if (p.n === 0) {
+      return p.dy
+  }
+      const util_arr =  util((p.x + p.dx),(Math.abs(p.y - p.dy)));
+      const new_u = util_arr[0];
+      const new_du_dy = util_arr[1];
+      const dy = p.dy + Math.abs((new_u - p.u) / new_du_dy);
+      return newton({x:p.x , y:p.y ,dx: p.dx , dy ,u: p.u ,n: p.n - 1});
+  
+}
+
+const newton_dx_to_dy =(
+  args :any
+) => {
+  const xp = args.x + args.dx ;
+  const u = util(args.x,args.y)[0] ;
+  return newton({x:args.x , y:args.y, dx:args.dx , dy:0 , u  ,n:args.rounds})
+}
+
+
+const trade_dtez_for_dcash = (
+  args : any
+) =>{
+  const x = args.tez * (2** 48); 
+  const y = args.target * args.cash;
+  const dx = args.dtez * (2** 48); 
+  const dy_approx = newton_dx_to_dy({x, y, dx, rounds:args.rounds});
+  const dcash_approx = dy_approx / args.target;
+  return dcash_approx
+}
+
+const rateCalc = (): number =>
+{
+  let e_rate = 1;
+  if(cfmmStorage){
+    const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
+  e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target:cfmmStorage.target.toNumber() , rounds: 4})*9999/10000)/1e6
+  }
+  return formatNumberStandard(e_rate);
+  
+}
+useEffect(()=>{
+  setRate(rateCalc())
+},[cfmmStorage])
+
 
   const stats = () => {
-    return (
+    
+        return (
       <Flex direction="column">
         <Flex direction="row">
           <Text color={sidebarTxt} fontSize="xs" cursor="default">
@@ -60,7 +124,7 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
             Current Price
           </Text>
           <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
-            {data?.currentPrice}
+            {data? rate : ""}
           </Text>
         </Flex>
         <Flex direction="row">
@@ -231,11 +295,6 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
                   <Text fontSize="sm" color={sidebarTopic} cursor="default">
                     Adopters
                   </Text>
-                </MenuItem>
-                <MenuItem icon={<Image src={BenderLabs} w={21} />}>
-                  <a href="https://www.benderlabs.io/" target="_blank" rel="noreferrer">
-                    Bender Labs
-                  </a>
                 </MenuItem>
                 <MenuItem icon={<Plenty />}>
                   <a href="https://www.plentydefi.com/" target="_blank" rel="noreferrer">

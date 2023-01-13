@@ -50,10 +50,15 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   const currentPrice = cfmmStorage.tezPool.toNumber() / cfmmStorage.cashPool.toNumber();
   const cashPool = cfmmStorage.tezPool.toNumber();
   const outstanding = cfmmFA12Storage.total_supply.toNumber();
-  let fee = (Math.abs(outstanding - 8*cashPool)*2**22)/outstanding;
-  if (((cashPool * 16) < outstanding)||((cashPool * 8) > outstanding)) {
+  let fee = 1;
+  if ((cashPool * 16) < outstanding) {
     fee = 2097152;
   }
+  else if ((cashPool * 8) > outstanding){
+    fee = 2097152
+  }
+  fee = (Math.abs(outstanding - 8*cashPool)*(2**22))/outstanding;
+
   const d = new Date(cTezStorage.last_update).getTimezoneOffset()
   const delta = Math.abs(Date.now()- d);
   const new_fee_index = cTezStorage.fee_index.toNumber() + (delta*cTezStorage.fee_index.toNumber()*fee)/2**48 ;

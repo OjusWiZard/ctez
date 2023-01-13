@@ -204,7 +204,7 @@ const Swap: React.FC = () => {
     setTarget(c.target.toNumber())}
   }
 
-  const rateCalc = (): number =>
+ const rateCalc = (): number =>
   {
     let e_rate = 1;
     if(cfmmStorage){
