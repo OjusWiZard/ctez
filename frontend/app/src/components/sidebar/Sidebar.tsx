@@ -34,6 +34,7 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
   const location = useLocation();
   const dispatch = useDispatch();
   const { data } = useCtezBaseStats();
+  const [ctezCFMMsupply, setCtezCFMMsupply] = useState("");
 
   const [sideBarBackground, sidebarTxt, sidebarTopic] = useThemeColors([
     'sideBarBg',
@@ -96,8 +97,11 @@ const rateCalc = (): number =>
 {
   let e_rate = 1;
   if(cfmmStorage){
+    
     const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
-  e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target:cfmmStorage.target.toNumber() , rounds: 4})*9999/10000)/1e6
+    const supply = (tokenPool.toNumber() / cfmmStorage.lqtTotal.toNumber())*100
+    setCtezCFMMsupply(supply.toFixed(6))
+    e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target:cfmmStorage.target.toNumber() , rounds: 4})*9999/10000)/1e6
   }
   return formatNumberStandard(e_rate);
   
@@ -149,6 +153,14 @@ useEffect(()=>{
           </Text>
           <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.annual_fee}%
+          </Text>
+        </Flex>
+        <Flex direction="row">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
+          Ctez CFMM Supply
+          </Text>
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
+            {ctezCFMMsupply}%
           </Text>
         </Flex>
         {/* <Flex direction="row">
