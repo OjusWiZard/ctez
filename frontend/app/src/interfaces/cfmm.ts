@@ -41,6 +41,11 @@ export interface TezToTokenParams {
   rounds: number;
 }
 
+export interface CfmmFA12Storage {
+  admin : string;
+  total_supply : BigNumber;
+}
+
 export interface CfmmStorage {
   cashPool: BigNumber;
   tezPool: BigNumber;

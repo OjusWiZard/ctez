@@ -1,7 +1,7 @@
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import clsx from 'clsx';
 import { Text, Flex, Box, Image } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ReactComponent as MyOvens } from '../../assets/images/sidebar/myovens.svg';
@@ -19,8 +19,10 @@ import { ReactComponent as Logo } from '../../assets/images/sidebar/ctez.svg';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
-import { useCtezBaseStats } from '../../api/queries';
+import { useCfmmStorage, useCtezBaseStats } from '../../api/queries';
 import { useThemeColors } from '../../hooks/utilHooks';
+import { formatNumberStandard } from '../../utils/numbers';
+import { trade_dtez_for_dcash } from '../../utils/swapUtils';
 
 export interface Props {
   handleCollapsed: React.MouseEventHandler;
@@ -33,6 +35,7 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
   const location = useLocation();
   const dispatch = useDispatch();
   const { data } = useCtezBaseStats();
+  const [ctezCFMMsupply, setCtezCFMMsupply] = useState("");
 
   const [sideBarBackground, sidebarTxt, sidebarTopic] = useThemeColors([
     'sideBarBg',
@@ -43,9 +46,30 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
   const handleCreateOvenClick = () => {
     dispatch(openModal(MODAL_NAMES.CREATE_OVEN));
   };
+  const [rate,setRate] = useState(1);
+  const { data: cfmmStorage } = useCfmmStorage();
+
+const rateCalc = (): number =>
+{
+  let e_rate = 1;
+  if(cfmmStorage){
+    
+    const { cashPool: tokenPool, tezPool: cashPool } = cfmmStorage;
+    const supply = (tokenPool.toNumber() / cfmmStorage.lqtTotal.toNumber())*100
+    setCtezCFMMsupply(supply.toFixed(6))
+    e_rate = (trade_dtez_for_dcash({tez:cashPool.toNumber() , cash:tokenPool.toNumber() , dtez: 1000000 , target:cfmmStorage.target.toNumber() , rounds: 4})*9999/10000)/1e6
+  }
+  return formatNumberStandard(e_rate);
+  
+}
+useEffect(()=>{
+  setRate(rateCalc())
+},[cfmmStorage])
+
 
   const stats = () => {
-    return (
+    
+        return (
       <Flex direction="column">
         <Flex direction="row">
           <Text color={sidebarTxt} fontSize="xs" cursor="default">
@@ -60,7 +84,7 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
             Current Price
           </Text>
           <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
-            {data?.currentPrice}
+            {data? rate : ""}
           </Text>
         </Flex>
         <Flex direction="row">
@@ -77,6 +101,22 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
           </Text>
           <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.currentAnnualDrift}%
+          </Text>
+        </Flex>
+        <Flex direction="row">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
+          Liquidity Fee
+          </Text>
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
+            {data?.annual_fee}%
+          </Text>
+        </Flex>
+        <Flex direction="row">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
+          Ctez CFMM Supply
+          </Text>
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
+            {ctezCFMMsupply}%
           </Text>
         </Flex>
         {/* <Flex direction="row">
@@ -223,11 +263,6 @@ const Sidebar: React.FC<Props> = ({ handleCollapsed, handleToggled, collapsed, t
                   <Text fontSize="sm" color={sidebarTopic} cursor="default">
                     Adopters
                   </Text>
-                </MenuItem>
-                <MenuItem icon={<Image src={BenderLabs} w={21} />}>
-                  <a href="https://www.benderlabs.io/" target="_blank" rel="noreferrer">
-                    Bender Labs
-                  </a>
                 </MenuItem>
                 <MenuItem icon={<Plenty />}>
                   <a href="https://www.plentydefi.com/" target="_blank" rel="noreferrer">

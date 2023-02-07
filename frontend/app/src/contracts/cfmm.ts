@@ -14,6 +14,7 @@ import {
   RemoveLiquidityParams,
   CashToTezParams,
   TezToTokenParams,
+  CfmmFA12Storage,
 } from '../interfaces';
 import { CFMM_ADDRESS } from '../utils/globals';
 import { getTezosInstance } from './client';
@@ -21,6 +22,7 @@ import { getCTezFa12Contract, getLQTContract } from './fa12';
 import { executeMethod, initContract } from './utils';
 
 let cfmm: WalletContract;
+let cfmmfa12: WalletContract;
 
 type FA12TokenType = 'ctez' | 'lqt';
 
@@ -28,8 +30,17 @@ export const initCfmm = async (address: string): Promise<void> => {
   cfmm = await initContract(address);
 };
 
+export const initCfmmFA12 = async (address: string): Promise<void> => {
+  cfmmfa12 = await initContract(address);
+};
+
+
 export const getCfmmStorage = async (): Promise<CfmmStorage> => {
   const storage = await cfmm.storage<CfmmStorage>();
+  return storage;
+};
+export const getCfmmFA12Storage = async (): Promise<CfmmFA12Storage> => {
+  const storage = await cfmmfa12.storage<CfmmFA12Storage>();
   return storage;
 };
 
